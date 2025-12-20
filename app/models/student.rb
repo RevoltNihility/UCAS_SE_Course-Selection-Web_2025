@@ -1,4 +1,6 @@
 class Student < ApplicationRecord
+  has_many :enrollments, dependent: :destroy
+  has_many :courses, through: :enrollments
   has_secure_password
   validates :name, presence: true, length: { minimum: 2, maximum: 50 }
   validates :email, presence: true, uniqueness: true, format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i, message: "Name Format Invalid" }

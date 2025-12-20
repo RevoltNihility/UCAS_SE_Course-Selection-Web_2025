@@ -7,5 +7,7 @@ FactoryBot.define do
     sequence(:student_id) do |n|
       "2023K#{format('%010d', n)}"
     end
+    password { "testpassword" }
+    password_confirmation { "testpassword" }
   end
 end

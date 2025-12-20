@@ -54,5 +54,15 @@ describe Student do
 
       expect(student).not_to be_valid
     end
+
+    it 'password cannot be nil' do
+      student.password = nil
+      expect(student).not_to be_valid
+    end
+
+    it 'password_confirmation cannot be nil' do
+      student.password_confirmation = nil
+      expect(student).not_to be_valid
+    end
   end
 end

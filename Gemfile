@@ -64,6 +64,9 @@ group :development, :test do
 
   # rails-controller-testing
   gem "rails-controller-testing"
+
+  # faker for seeds
+  gem "faker"
 end
 
 group :development do

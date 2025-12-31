@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :users
   namespace :my_courses do
     get "selected_courses", to: "selected_courses#index"
   end

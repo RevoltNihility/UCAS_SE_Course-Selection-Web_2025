@@ -1,0 +1,2 @@
+module MyCourses::SelectedCoursesHelper
+end

@@ -18,7 +18,3 @@ module SeedHelper
     end
   end
 end
-
-RSpec.configure do |config|
-  config.include SeedHelper
-end

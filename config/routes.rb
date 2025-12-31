@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  namespace :my_courses do
+    get "selected_courses", to: "selected_courses#index"
+  end
   get "/login", to: "sessions#new"
   post "/login", to: "sessions#create"
   resources :students

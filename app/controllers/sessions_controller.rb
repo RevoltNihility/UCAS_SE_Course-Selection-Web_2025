@@ -1,7 +1,7 @@
 class SessionsController < ApplicationController
   include SessionsHelper
   def new
-    logged_in? ? (redirect_to root_path) : (render :new)
+    logged_in? ? (redirect_to my_courses_selected_courses_path) : (render :new)
   end
 
   def create

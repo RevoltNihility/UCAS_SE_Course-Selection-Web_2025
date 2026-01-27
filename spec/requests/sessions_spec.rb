@@ -10,12 +10,12 @@ RSpec.describe "Sessions", type: :request do
       expect(response).to render_template('sessions/new')
     end
 
-    it "redirects to root if already logged in" do
+    it "redirects to my courses if already logged in" do
       # 先登录
       post login_path, params: { session: { email: user.email, password: "correct_password" } }
       # 再次访问登录页面应该重定向
       get login_path
-      expect(response).to redirect_to(root_path)
+      expect(response).to redirect_to(my_courses_selected_courses_path)
     end
   end
 

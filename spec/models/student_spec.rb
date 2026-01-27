@@ -54,15 +54,24 @@ describe Student do
 
       expect(student).not_to be_valid
     end
+  end
 
-    it 'password cannot be nil' do
-      student.password = nil
-      expect(student).not_to be_valid
+  describe "associations" do
+    it "belongs to user" do
+      association = Student.reflect_on_association(:user)
+      expect(association.macro).to eq(:belongs_to)
     end
 
-    it 'password_confirmation cannot be nil' do
-      student.password_confirmation = nil
-      expect(student).not_to be_valid
+    it "has many enrollments" do
+      association = Student.reflect_on_association(:enrollments)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:dependent]).to eq(:destroy)
+    end
+
+    it "has many courses through enrollments" do
+      association = Student.reflect_on_association(:courses)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:through]).to eq(:enrollments)
     end
   end
 end

@@ -5,10 +5,10 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = Student.find_by_email(params[:session][:email])
+    user = User.find_by(email: params[:session][:email])
     if user && user.authenticate(params[:session][:password])
       log_in(user)
-      flash.now[:success] = "登录成功！"
+      flash[:success] = "登录成功！"
       redirect_back_or(my_courses_selected_courses_path)
     else
       flash.now[:danger] = "登录失败，用户名/密码错误！"

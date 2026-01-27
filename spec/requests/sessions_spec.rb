@@ -26,13 +26,7 @@ RSpec.describe "Sessions", type: :request do
 
         expect(session[:user_id]).to eq(user.id)
         expect(response).to redirect_to(my_courses_selected_courses_path)
-      end
-
-      it "sets a success flash message" do
-        post login_path, params: { session: { email: user.email, password: "correct_password" } }
-
-        follow_redirect!
-        expect(response.body).to include("登录成功")
+        expect(flash[:success]).to eq("登录成功！")
       end
     end
 

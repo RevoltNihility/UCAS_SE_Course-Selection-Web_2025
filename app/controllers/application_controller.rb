@@ -9,11 +9,11 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def request_logged
-    unless logged_in?
-      store_location
-      flash[:danger] = "请登录后重试"
-      redirect_to login_path
+    def request_logged
+      unless logged_in?
+        store_location
+        flash[:danger] = "请登录后重试"
+        redirect_to login_path
+      end
     end
-  end
 end

@@ -1,0 +1,9 @@
+zh-CN:
+  activerecord:
+    attributes:
+      enrollment:
+        course_types:
+          public_required: "公共必修"
+          public_elective: "公共选修"
+          major_required: "专业必修"
+          major_elective: "专业选修"

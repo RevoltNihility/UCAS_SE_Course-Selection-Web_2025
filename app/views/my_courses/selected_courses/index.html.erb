@@ -41,14 +41,7 @@
         <td><%= course.code %></td>
         <td><%= course.name %></td>
         <td><%= course.class_hours %>/<%= course.credits %></td>
-        <td>
-          <%= case enrollment.course_type
-              when "public_required" then "公共必修"
-              when "public_elective" then "公共选修"
-              when "major_required" then "专业必修"
-              when "major_elective" then "专业选修"
-              end %>
-        </td>
+        <td><%= enrollment.course_type_i18n %></td>
         <td><%= course.teacher %></td>
         <td><%= enrollment.semester_display %></td>
         <td>

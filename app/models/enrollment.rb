@@ -34,4 +34,10 @@ class Enrollment < ApplicationRecord
 
     "#{academic_year}#{SEMESTER_CHINESE[semester]}"
   end
+
+  # 返回课程类型的中文名称
+  def course_type_i18n
+    return nil if course_type.nil?
+    I18n.t("activerecord.attributes.enrollment.course_types.#{course_type}", default: course_type)
+  end
 end

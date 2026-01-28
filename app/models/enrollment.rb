@@ -14,4 +14,19 @@ class Enrollment < ApplicationRecord
     spring: 1,  # 春季学期
     summer: 2   # 夏季学期
   }
+
+  # 学期中文映射
+  SEMESTER_CHINESE = {
+    "fall" => "秋",
+    "spring" => "春",
+    "summer" => "夏"
+  }.freeze
+
+  # 返回格式化的学期显示字符串
+  def semester_display
+    return nil if academic_year.nil?
+    return academic_year if semester.nil?
+
+    "#{academic_year}#{SEMESTER_CHINESE[semester]}"
+  end
 end

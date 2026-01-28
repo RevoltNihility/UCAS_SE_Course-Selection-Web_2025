@@ -77,7 +77,7 @@ RSpec.describe Enrollment, type: :model do
 
     it "sorts by academic_year DESC, semester DESC, course_type ASC" do
       ordered = Enrollment.ordered
-      expect(ordered.to_a).to eq([@e3, @e4, @e2, @e1, @e5])
+      expect(ordered.to_a).to eq([ @e3, @e4, @e2, @e1, @e5 ])
     end
 
     it "prioritizes recent academic years" do

@@ -221,7 +221,7 @@ describe Student do
       allow(Date).to receive(:today).and_return(Date.new(2025, 6, 1))
 
       semesters = student.available_semesters
-      expect(semesters).to eq(["2024-2025秋", "2024-2025春"])
+      expect(semesters).to eq([ "2024-2025秋", "2024-2025春" ])
     end
 
     it "handles newly enrolled students (same year as current)" do
@@ -229,7 +229,7 @@ describe Student do
       allow(Date).to receive(:today).and_return(Date.new(2026, 3, 1))
 
       semesters = student.available_semesters
-      expect(semesters).to eq(["2025-2026秋", "2025-2026春"])
+      expect(semesters).to eq([ "2025-2026秋", "2025-2026春" ])
     end
 
     it "includes current semester when in fall" do

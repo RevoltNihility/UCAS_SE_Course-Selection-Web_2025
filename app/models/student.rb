@@ -28,7 +28,7 @@ class Student < ApplicationRecord
     current_academic_year_start = current_month >= 9 ? current_year : current_year - 1
 
     # 确定起始学年:取入学年份和当前学年中较早的一个
-    start_year = [enrollment_year, current_academic_year_start].min
+    start_year = [ enrollment_year, current_academic_year_start ].min
 
     semesters = []
 
@@ -64,10 +64,10 @@ class Student < ApplicationRecord
 
       # 将中文字符映射回 enum 值
       semester_enum = case semester_char
-                      when "秋" then "fall"
-                      when "春" then "spring"
-                      when "夏" then "summer"
-                      end
+      when "秋" then "fall"
+      when "春" then "spring"
+      when "夏" then "summer"
+      end
 
       result = result.where(academic_year: academic_year, semester: semester_enum)
     end
@@ -82,8 +82,8 @@ class Student < ApplicationRecord
 
   private
 
-  # 转义 SQL LIKE 查询中的特殊字符
-  def sanitize_sql_like(string)
-    string.gsub(/[%_]/, '\\\\\0')
-  end
+    # 转义 SQL LIKE 查询中的特殊字符
+    def sanitize_sql_like(string)
+      string.gsub(/[%_]/, '\\\\\0')
+    end
 end

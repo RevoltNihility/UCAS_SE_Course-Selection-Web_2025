@@ -38,3 +38,9 @@ test/
 
 # Ignore VScode
 .vscode/
+
+# Ignore temp figures for claude
+/temp/figs/
+
+# Ignore NEXT.md for claude
+NEXT.md

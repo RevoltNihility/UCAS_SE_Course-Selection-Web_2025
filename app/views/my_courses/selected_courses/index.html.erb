@@ -55,7 +55,7 @@
             <tr>
               <td><%= course.code %></td>
               <td><%= course.name %></td>
-              <td><%= course.class_hours %>/<%= course.credits %></td>
+              <td><%= format_class_hours_credits(course) %></td>
               <td><%= enrollment.course_type_i18n %></td>
               <td><%= course.teacher %></td>
               <td><%= enrollment.semester_display %></td>

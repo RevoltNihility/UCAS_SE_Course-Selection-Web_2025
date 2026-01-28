@@ -13,6 +13,35 @@ class Student < ApplicationRecord
     student_id[0..3].to_i
   end
 
+  # 获取从入学到当前的所有可选学期列表
+  # @return [Array<String>] 学期列表,格式如 ["2024-2025秋", "2024-2025春"]
+  def available_semesters
+    return [] if enrollment_year.nil?
+
+    today = Date.today
+    current_year = today.year
+    current_month = today.month
+
+    # 确定当前所在的学年
+    # 如果当前月份 >= 9,说明新学年的秋季学期已经开始
+    # 否则还在上一学年的春季学期
+    current_academic_year_start = current_month >= 9 ? current_year : current_year - 1
+
+    # 确定起始学年:取入学年份和当前学年中较早的一个
+    start_year = [enrollment_year, current_academic_year_start].min
+
+    semesters = []
+
+    # 从起始年份到当前学年,生成所有学期
+    (start_year..current_academic_year_start).each do |year|
+      academic_year = "#{year}-#{year + 1}"
+      semesters << "#{academic_year}秋"
+      semesters << "#{academic_year}春"
+    end
+
+    semesters
+  end
+
   # 筛选选课记录
   # @param semester [String] 学期字符串,格式如 "2024-2025秋"
   # @param course_name [String] 课程名称,支持模糊搜索

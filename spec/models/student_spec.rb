@@ -204,4 +204,57 @@ describe Student do
       end
     end
   end
+
+  describe "#available_semesters" do
+    it "returns all semesters from enrollment year to current year" do
+      student.student_id = "2024K1234567890"
+      # 假设当前是 2026 年
+      allow(Date).to receive(:today).and_return(Date.new(2026, 3, 1))
+
+      semesters = student.available_semesters
+      expect(semesters).to include("2024-2025秋", "2024-2025春", "2025-2026秋", "2025-2026春")
+      expect(semesters.length).to eq(4)
+    end
+
+    it "returns semesters in chronological order" do
+      student.student_id = "2024K1234567890"
+      allow(Date).to receive(:today).and_return(Date.new(2025, 6, 1))
+
+      semesters = student.available_semesters
+      expect(semesters).to eq(["2024-2025秋", "2024-2025春"])
+    end
+
+    it "handles newly enrolled students (same year as current)" do
+      student.student_id = "2026K1234567890"
+      allow(Date).to receive(:today).and_return(Date.new(2026, 3, 1))
+
+      semesters = student.available_semesters
+      expect(semesters).to eq(["2025-2026秋", "2025-2026春"])
+    end
+
+    it "includes current semester when in fall" do
+      student.student_id = "2024K1234567890"
+      allow(Date).to receive(:today).and_return(Date.new(2025, 10, 1))
+
+      semesters = student.available_semesters
+      expect(semesters).to include("2025-2026秋")
+    end
+
+    it "returns empty array when enrollment_year is nil" do
+      student.student_id = nil
+
+      semesters = student.available_semesters
+      expect(semesters).to eq([])
+    end
+
+    it "handles students enrolled many years ago" do
+      student.student_id = "2020K1234567890"
+      allow(Date).to receive(:today).and_return(Date.new(2023, 6, 1))
+
+      semesters = student.available_semesters
+      expect(semesters.length).to eq(6)  # 2020-2021秋春, 2021-2022秋春, 2022-2023秋春
+      expect(semesters.first).to eq("2020-2021秋")
+      expect(semesters.last).to eq("2022-2023春")
+    end
+  end
 end

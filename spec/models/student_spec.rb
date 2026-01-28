@@ -74,4 +74,26 @@ describe Student do
       expect(association.options[:through]).to eq(:enrollments)
     end
   end
+
+  describe "#enrollment_year" do
+    it "returns the first 4 digits of student_id as an integer" do
+      student.student_id = "2024K1234567890"
+      expect(student.enrollment_year).to eq(2024)
+    end
+
+    it "works with different years" do
+      student.student_id = "2023K0000000001"
+      expect(student.enrollment_year).to eq(2023)
+    end
+
+    it "returns nil when student_id is nil" do
+      student.student_id = nil
+      expect(student.enrollment_year).to be_nil
+    end
+
+    it "returns nil when student_id is too short" do
+      student.student_id = "202"
+      expect(student.enrollment_year).to be_nil
+    end
+  end
 end

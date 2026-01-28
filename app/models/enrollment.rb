@@ -22,6 +22,11 @@ class Enrollment < ApplicationRecord
     "summer" => "夏"
   }.freeze
 
+  # 排序 scope: 按学年降序、学期降序、课程类型升序
+  scope :ordered, -> {
+    order(academic_year: :desc, semester: :desc, course_type: :asc)
+  }
+
   # 返回格式化的学期显示字符串
   def semester_display
     return nil if academic_year.nil?

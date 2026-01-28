@@ -96,4 +96,112 @@ describe Student do
       expect(student.enrollment_year).to be_nil
     end
   end
+
+  describe "#enrollments_filtered" do
+    let(:student) { create(:student) }
+    let(:course1) { create(:course, name: "高等数学") }
+    let(:course2) { create(:course, name: "线性代数") }
+    let(:course3) { create(:course, name: "数据结构") }
+    let(:course4) { create(:course, name: "计算机网络") }
+
+    before do
+      create(:enrollment, student: student, course: course1,
+             academic_year: "2024-2025", semester: :fall)
+      create(:enrollment, student: student, course: course2,
+             academic_year: "2024-2025", semester: :spring)
+      create(:enrollment, student: student, course: course3,
+             academic_year: "2025-2026", semester: :fall)
+      create(:enrollment, student: student, course: course4,
+             academic_year: "2023-2024", semester: :spring)
+    end
+
+    context "without any filters" do
+      it "returns all enrollments ordered" do
+        result = student.enrollments_filtered
+        expect(result.count).to eq(4)
+        # 验证排序:2025-2026秋 > 2024-2025春 > 2024-2025秋 > 2023-2024春
+        expect(result.first.course.name).to eq("数据结构")
+        expect(result.last.course.name).to eq("计算机网络")
+      end
+    end
+
+    context "filtering by semester only" do
+      it "returns only enrollments from specified semester" do
+        result = student.enrollments_filtered(semester: "2024-2025秋")
+        expect(result.count).to eq(1)
+        expect(result.first.course.name).to eq("高等数学")
+      end
+
+      it "returns empty when no match" do
+        result = student.enrollments_filtered(semester: "2022-2023秋")
+        expect(result).to be_empty
+      end
+
+      it "handles spring semester" do
+        result = student.enrollments_filtered(semester: "2024-2025春")
+        expect(result.count).to eq(1)
+        expect(result.first.course.name).to eq("线性代数")
+      end
+    end
+
+    context "filtering by course name only" do
+      it "returns enrollments with matching course names (fuzzy search)" do
+        result = student.enrollments_filtered(course_name: "数")
+        expect(result.count).to eq(3)
+        expect(result.map { |e| e.course.name }).to contain_exactly("高等数学", "线性代数", "数据结构")
+      end
+
+      it "is case sensitive" do
+        result = student.enrollments_filtered(course_name: "计算机")
+        expect(result.count).to eq(1)
+        expect(result.first.course.name).to eq("计算机网络")
+      end
+
+      it "returns empty when no match" do
+        result = student.enrollments_filtered(course_name: "物理")
+        expect(result).to be_empty
+      end
+    end
+
+    context "filtering by both semester and course name" do
+      it "returns enrollments matching both conditions" do
+        result = student.enrollments_filtered(semester: "2024-2025秋", course_name: "数学")
+        expect(result.count).to eq(1)
+        expect(result.first.course.name).to eq("高等数学")
+      end
+
+      it "returns empty when semester matches but course name doesn't" do
+        result = student.enrollments_filtered(semester: "2024-2025秋", course_name: "物理")
+        expect(result).to be_empty
+      end
+
+      it "returns empty when course name matches but semester doesn't" do
+        result = student.enrollments_filtered(semester: "2022-2023秋", course_name: "数学")
+        expect(result).to be_empty
+      end
+    end
+
+    context "with nil or empty parameters" do
+      it "treats nil semester as no filter" do
+        result = student.enrollments_filtered(semester: nil, course_name: "数学")
+        expect(result.count).to eq(1)
+        expect(result.first.course.name).to eq("高等数学")
+      end
+
+      it "treats empty string semester as no filter" do
+        result = student.enrollments_filtered(semester: "", course_name: "数学")
+        expect(result.count).to eq(1)
+      end
+
+      it "treats nil course_name as no filter" do
+        result = student.enrollments_filtered(semester: "2024-2025秋", course_name: nil)
+        expect(result.count).to eq(1)
+      end
+
+      it "treats empty string course_name as no filter" do
+        result = student.enrollments_filtered(semester: "2024-2025秋", course_name: "")
+        expect(result.count).to eq(1)
+      end
+    end
+  end
 end

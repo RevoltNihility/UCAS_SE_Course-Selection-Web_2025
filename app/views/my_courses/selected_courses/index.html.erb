@@ -26,35 +26,47 @@
   </div>
 
   <div class="courses-table-wrapper">
-    <table class="courses-table">
-      <thead>
-        <tr>
-          <th>课程编号</th>
-          <th>课程名称</th>
-          <th>学时/学分</th>
-          <th>课程类型</th>
-          <th>主讲教师</th>
-          <th>选课学期</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @enrollments.each do |enrollment| %>
-          <% course = enrollment.course %>
+    <% if @enrollments.empty? %>
+      <div class="empty-state">
+        <p>
+          <% if params[:semester].present? || params[:course_name].present? %>
+            未找到符合条件的课程
+          <% else %>
+            暂无选课记录
+          <% end %>
+        </p>
+      </div>
+    <% else %>
+      <table class="courses-table">
+        <thead>
           <tr>
-            <td><%= course.code %></td>
-            <td><%= course.name %></td>
-            <td><%= course.class_hours %>/<%= course.credits %></td>
-            <td><%= enrollment.course_type_i18n %></td>
-            <td><%= course.teacher %></td>
-            <td><%= enrollment.semester_display %></td>
-            <td>
-              <button class="btn btn-danger btn-sm" disabled>退课</button>
-            </td>
+            <th>课程编号</th>
+            <th>课程名称</th>
+            <th>学时/学分</th>
+            <th>课程类型</th>
+            <th>主讲教师</th>
+            <th>选课学期</th>
+            <th>操作</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @enrollments.each do |enrollment| %>
+            <% course = enrollment.course %>
+            <tr>
+              <td><%= course.code %></td>
+              <td><%= course.name %></td>
+              <td><%= course.class_hours %>/<%= course.credits %></td>
+              <td><%= enrollment.course_type_i18n %></td>
+              <td><%= course.teacher %></td>
+              <td><%= enrollment.semester_display %></td>
+              <td>
+                <button class="btn btn-danger btn-sm" disabled>退课</button>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
   </div>
 </div>
 
@@ -149,6 +161,19 @@
 
   .courses-table-wrapper {
     overflow-x: auto;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+  }
+
+  .empty-state p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
   }
 
   .courses-table {

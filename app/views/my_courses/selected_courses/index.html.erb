@@ -1,1 +1,60 @@
 <h1>已选课程</h1>
+
+<div class="filter-form">
+  <%= form_with url: my_courses_selected_courses_path, method: :get, local: true do |f| %>
+    <div class="filter-field">
+      <%= f.label :semester, "选课学期" %>
+      <%= f.select :semester,
+                   options_for_select([["不限", ""]] + @available_semesters.map { |s| [s, s] }, params[:semester]),
+                   {},
+                   { id: "semester-select" } %>
+    </div>
+
+    <div class="filter-field">
+      <%= f.label :course_name, "课程名称" %>
+      <%= f.text_field :course_name, value: params[:course_name], placeholder: "输入课程名称搜索" %>
+    </div>
+
+    <div class="filter-actions">
+      <%= f.submit "查询", name: nil %>
+      <button type="button" onclick="window.location.href='<%= my_courses_selected_courses_path %>'">重置</button>
+    </div>
+  <% end %>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>课程编号</th>
+      <th>课程名称</th>
+      <th>学时/学分</th>
+      <th>课程类型</th>
+      <th>主讲教师</th>
+      <th>选课学期</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @enrollments.each do |enrollment| %>
+      <% course = enrollment.course %>
+      <tr>
+        <td><%= course.code %></td>
+        <td><%= course.name %></td>
+        <td><%= course.class_hours %>/<%= course.credits %></td>
+        <td>
+          <%= case enrollment.course_type
+              when "public_required" then "公共必修"
+              when "public_elective" then "公共选修"
+              when "major_required" then "专业必修"
+              when "major_elective" then "专业选修"
+              end %>
+        </td>
+        <td><%= course.teacher %></td>
+        <td><%= enrollment.semester_display %></td>
+        <td>
+          <button disabled>退课</button>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

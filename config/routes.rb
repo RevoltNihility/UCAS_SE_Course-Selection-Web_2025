@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   # Feature namespaces
   namespace :my_courses do
     get "selected_courses", to: "selected_courses#index"
+    resources :select_courses, only: [:index, :create]
   end
 
   # Static pages

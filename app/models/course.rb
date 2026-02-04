@@ -20,4 +20,21 @@ class Course < ApplicationRecord
 
   # 获取可选课程列表
   scope :available_for_selection, ->(semester) { order(:name) }
+
+  # 筛选课程
+  def self.filter_for_selection(course_name:, course_type:)
+    courses = all
+
+    # 按课程名称筛选（模糊搜索）
+    if course_name.present?
+      courses = courses.where("name LIKE ?", "%#{course_name}%")
+    end
+
+    # 按课程类型筛选
+    if course_type.present?
+      courses = courses.where(course_type: course_type)
+    end
+
+    courses.order(:name)
+  end
 end

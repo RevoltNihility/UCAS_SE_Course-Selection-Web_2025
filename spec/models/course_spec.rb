@@ -137,19 +137,68 @@ RSpec.describe Course, type: :model do
     end
   end
 
-  describe '.available_for_selection' do
-    let!(:course1) { create(:course, name: '课程1') }
-    let!(:course2) { create(:course, name: '课程2') }
-    let!(:course3) { create(:course, name: '课程3') }
+  describe '.filter_for_selection' do
+    let!(:course1) { create(:course, name: '高等数学', course_type: :required) }
+    let!(:course2) { create(:course, name: '线性代数', course_type: :required) }
+    let!(:course3) { create(:course, name: '机器学习', course_type: :elective) }
+    let!(:course4) { create(:course, name: '大学物理', course_type: :required) }
 
-    it 'returns all courses when semester is not specified' do
-      courses = Course.available_for_selection(nil)
-      expect(courses).to include(course1, course2, course3)
+    context 'without any filters' do
+      it 'returns all courses ordered by name' do
+        courses = Course.filter_for_selection(course_name: nil, course_type: nil)
+        expect(courses.count).to eq(4)
+        expect(courses.first.name).to eq('大学物理')
+      end
     end
 
-    it 'returns courses ordered by name' do
-      courses = Course.available_for_selection(nil)
-      expect(courses.first.name).to eq('课程1')
+    context 'with course_name filter' do
+      it 'filters courses by name (fuzzy search)' do
+        courses = Course.filter_for_selection(course_name: '数', course_type: nil)
+        expect(courses).to include(course1, course2)
+        expect(courses).not_to include(course3, course4)
+      end
+
+      it 'returns empty when no match' do
+        courses = Course.filter_for_selection(course_name: '化学', course_type: nil)
+        expect(courses).to be_empty
+      end
+
+      it 'handles empty string as no filter' do
+        courses = Course.filter_for_selection(course_name: '', course_type: nil)
+        expect(courses.count).to eq(4)
+      end
+    end
+
+    context 'with course_type filter' do
+      it 'filters courses by type' do
+        courses = Course.filter_for_selection(course_name: nil, course_type: 'required')
+        expect(courses).to include(course1, course2, course4)
+        expect(courses).not_to include(course3)
+      end
+
+      it 'handles elective type' do
+        courses = Course.filter_for_selection(course_name: nil, course_type: 'elective')
+        expect(courses).to include(course3)
+        expect(courses).not_to include(course1, course2, course4)
+      end
+
+      it 'handles empty string as no filter' do
+        courses = Course.filter_for_selection(course_name: nil, course_type: '')
+        expect(courses.count).to eq(4)
+      end
+    end
+
+    context 'with both filters' do
+      it 'applies both course_name and course_type filters' do
+        courses = Course.filter_for_selection(course_name: '数', course_type: 'required')
+        expect(courses).to include(course1, course2)
+        expect(courses).not_to include(course3, course4)
+      end
+
+      it 'returns empty when no courses match both conditions' do
+        courses = Course.filter_for_selection(course_name: '数学', course_type: 'elective')
+        expect(courses).to be_empty
+      end
     end
   end
 end

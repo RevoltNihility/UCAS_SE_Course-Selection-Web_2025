@@ -95,5 +95,23 @@ RSpec.describe "MyCourses::SelectedCourses", type: :request do
         expect(assigns(:enrollments)).to eq([])
       end
     end
+
+    context "sidebar navigation" do
+      it "renders the sidebar with navigation items" do
+        get my_courses_selected_courses_path
+        expect(response.body).to include("已选课程")
+        expect(response.body).to include("选修课程")
+      end
+
+      it "includes link to selected courses page" do
+        get my_courses_selected_courses_path
+        expect(response.body).to include(my_courses_selected_courses_path)
+      end
+
+      it "highlights the current page in sidebar" do
+        get my_courses_selected_courses_path
+        expect(response.body).to include("sidebar-item active")
+      end
+    end
   end
 end

@@ -1,0 +1,11 @@
+<div class="my-courses-sidebar">
+  <nav class="sidebar-nav">
+    <%= link_to my_courses_selected_courses_path, class: "sidebar-item #{current_page == :selected_courses ? 'active' : ''}" do %>
+      已选课程
+    <% end %>
+
+    <div class="sidebar-item disabled">
+      选修课程
+    </div>
+  </nav>
+</div>

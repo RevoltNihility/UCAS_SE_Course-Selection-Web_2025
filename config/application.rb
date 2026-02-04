@@ -23,5 +23,8 @@ module CourseSelection
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Set default locale to Simplified Chinese
+    config.i18n.default_locale = :"zh-CN"
   end
 end

@@ -1,6 +1,10 @@
 <div class="my-courses-container">
   <h1>已选课程</h1>
 
+  <div class="schedule-button-wrapper">
+    <button class="btn btn-secondary" disabled>查看本学期课表</button>
+  </div>
+
   <div class="filter-form">
     <%= form_with url: my_courses_selected_courses_path, method: :get, local: true do |f| %>
       <div class="filter-fields">
@@ -198,10 +202,13 @@
     background: #fafafa;
   }
 
-  .courses-table td:nth-child(3),
-  .courses-table td:nth-child(4),
-  .courses-table td:nth-child(6),
   .courses-table td:nth-child(7) {
     text-align: center;
+  }
+
+  .schedule-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
   }
 </style>

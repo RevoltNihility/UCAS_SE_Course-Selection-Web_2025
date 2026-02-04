@@ -1,1 +1,278 @@
-<h1>选择课程</h1>
+<div class="my-courses-page">
+  <h1>选择课程</h1>
+
+  <div class="my-courses-layout">
+    <%= render "my_courses/sidebar", current_page: :select_courses %>
+
+    <div class="my-courses-container">
+      <div class="filter-form">
+        <%= form_with url: my_courses_select_courses_path, method: :get, local: true do |f| %>
+          <div class="filter-fields">
+            <div class="filter-field">
+              <%= f.label :schedule_time, "上课时间" %>
+              <%= f.text_field :schedule_time, value: params[:schedule_time], placeholder: "输入上课时间" %>
+            </div>
+
+            <div class="filter-field">
+              <%= f.label :course_type, "课程属性" %>
+              <%= f.select :course_type,
+                           options_for_select(@course_type_options, params[:course_type]),
+                           {},
+                           { id: "course-type-select" } %>
+            </div>
+
+            <div class="filter-field">
+              <%= f.label :course_name, "课程名称" %>
+              <%= f.text_field :course_name, value: params[:course_name], placeholder: "输入课程名称搜索" %>
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <%= f.submit "查询", name: nil, class: "btn btn-primary" %>
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='<%= my_courses_select_courses_path %>'">重置</button>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="courses-table-wrapper">
+        <% if @courses.empty? %>
+          <div class="empty-state">
+            <p>
+              <% if params[:course_name].present? || params[:course_type].present? %>
+                未找到符合条件的课程
+              <% else %>
+                暂无可选课程
+              <% end %>
+            </p>
+          </div>
+        <% else %>
+          <table class="courses-table">
+            <thead>
+              <tr>
+                <th>课程编号</th>
+                <th>课程名称</th>
+                <th>学时/学分</th>
+                <th>已选/限选人数</th>
+                <th>课程类型</th>
+                <th>主讲教师</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @courses.each do |course| %>
+                <tr>
+                  <td><%= course.code %></td>
+                  <td><%= course.name %></td>
+                  <td><%= format_class_hours_credits(course) %></td>
+                  <td class="<%= 'enrollment-full' if course.full? %>">
+                    <%= course.enrolled_count %>/<%= course.max_enrollment %>
+                  </td>
+                  <td><%= course.course_type_i18n %></td>
+                  <td><%= course.teacher %></td>
+                  <td>
+                    <% if course.full? %>
+                      <button class="btn btn-danger btn-sm" disabled>选课人数已满</button>
+                    <% else %>
+                      <%= button_to "加入课程列表", my_courses_select_courses_path,
+                          params: { course_id: course.id },
+                          method: :post,
+                          class: "btn btn-primary btn-sm" %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .my-courses-page {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+  }
+
+  .my-courses-page h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+  }
+
+  .my-courses-layout {
+    display: flex;
+    gap: 20px;
+  }
+
+  .my-courses-sidebar {
+    flex-shrink: 0;
+    width: 200px;
+  }
+
+  .sidebar-nav {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+  }
+
+  .sidebar-item {
+    display: block;
+    padding: 12px 16px;
+    border-bottom: 1px solid #ddd;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .sidebar-item:last-child {
+    border-bottom: none;
+  }
+
+  .sidebar-item:hover:not(.disabled) {
+    background: #e8e8e8;
+  }
+
+  .sidebar-item.active {
+    background: #333;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .sidebar-item.disabled {
+    color: #999;
+    cursor: not-allowed;
+  }
+
+  .my-courses-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .filter-form {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .filter-fields {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .filter-field label {
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .filter-field select,
+  .filter-field input[type="text"] {
+    padding: 6px 10px;
+    border: 1px solid #999;
+    font-size: 14px;
+    min-width: 200px;
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    border: 1px solid #333;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .btn:hover:not(:disabled) {
+    background: #f0f0f0;
+  }
+
+  .btn-primary {
+    background: #333;
+    color: #fff;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #555;
+  }
+
+  .btn-secondary {
+    background: #fff;
+    color: #333;
+  }
+
+  .btn-danger {
+    background: #ddd;
+    color: #999;
+    border-color: #ccc;
+  }
+
+  .btn-sm {
+    padding: 4px 12px;
+    font-size: 13px;
+  }
+
+  .courses-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+  }
+
+  .empty-state p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+  }
+
+  .courses-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+  }
+
+  .courses-table th,
+  .courses-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+
+  .courses-table th {
+    background: #f5f5f5;
+    font-weight: bold;
+  }
+
+  .courses-table tbody tr:hover {
+    background: #fafafa;
+  }
+
+  .courses-table td:nth-child(7) {
+    text-align: center;
+  }
+
+  .enrollment-full {
+    color: #d32f2f;
+    font-weight: bold;
+  }
+</style>
+

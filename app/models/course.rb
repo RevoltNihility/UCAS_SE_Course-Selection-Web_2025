@@ -37,4 +37,9 @@ class Course < ApplicationRecord
 
     courses.order(:name)
   end
+
+  # 课程类型中文翻译
+  def course_type_i18n
+    I18n.t("activerecord.attributes.course.course_types.#{course_type}")
+  end
 end

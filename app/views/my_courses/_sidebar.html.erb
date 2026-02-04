@@ -4,8 +4,8 @@
       已选课程
     <% end %>
 
-    <div class="sidebar-item disabled">
-      选修课程
-    </div>
+    <%= link_to my_courses_select_courses_path, class: "sidebar-item #{current_page == :select_courses ? 'active' : ''}" do %>
+      选择课程
+    <% end %>
   </nav>
 </div>

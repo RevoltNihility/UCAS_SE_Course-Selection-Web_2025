@@ -7,3 +7,9 @@ zh-CN:
           public_elective: "公共选修"
           major_required: "专业必修"
           major_elective: "专业选修"
+      course:
+        course_types:
+          required: "必修"
+          elective: "选修"
+          public_elective: "公共选修"
+

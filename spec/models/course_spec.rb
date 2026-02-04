@@ -20,8 +20,8 @@ RSpec.describe Course, type: :model do
       expect(course.max_enrollment).to eq(100)
     end
 
-    it 'sets course_type to 0 by default' do
-      expect(course.course_type).to eq(0)
+    it 'sets course_type to required by default' do
+      expect(course.course_type).to eq('required')
     end
 
     it 'allows schedule_time to be nil' do
@@ -40,6 +40,116 @@ RSpec.describe Course, type: :model do
       association = Course.reflect_on_association(:students)
       expect(association.macro).to eq(:has_many)
       expect(association.options[:through]).to eq(:enrollments)
+    end
+  end
+
+  describe 'enums' do
+    it 'defines course_type enum' do
+      expect(Course.course_types).to eq({ 'required' => 0, 'elective' => 1, 'public_elective' => 2 })
+    end
+
+    it 'allows setting course_type to required' do
+      course = Course.create!(name: '必修课', code: 'REQ001', credits: 3, course_type: :required)
+      expect(course.required?).to be true
+    end
+
+    it 'allows setting course_type to elective' do
+      course = Course.create!(name: '选修课', code: 'ELE001', credits: 2, course_type: :elective)
+      expect(course.elective?).to be true
+    end
+
+    it 'allows setting course_type to public_elective' do
+      course = Course.create!(name: '公选课', code: 'PUB001', credits: 1, course_type: :public_elective)
+      expect(course.public_elective?).to be true
+    end
+  end
+
+  describe 'validations' do
+    it 'validates max_enrollment is greater than 0' do
+      course = Course.new(name: '测试课程', code: 'TEST001', credits: 3, max_enrollment: 0)
+      expect(course).not_to be_valid
+      expect(course.errors[:max_enrollment]).to be_present
+    end
+
+    it 'validates max_enrollment is not negative' do
+      course = Course.new(name: '测试课程', code: 'TEST001', credits: 3, max_enrollment: -1)
+      expect(course).not_to be_valid
+      expect(course.errors[:max_enrollment]).to be_present
+    end
+
+    it 'allows positive max_enrollment' do
+      course = Course.new(name: '测试课程', code: 'TEST001', credits: 3, max_enrollment: 50)
+      expect(course).to be_valid
+    end
+  end
+
+  describe '#enrolled_count' do
+    let(:course) { create(:course) }
+    let(:student1) { create(:student) }
+    let(:student2) { create(:student) }
+    let(:student3) { create(:student) }
+
+    it 'returns 0 when no students enrolled' do
+      expect(course.enrolled_count).to eq(0)
+    end
+
+    it 'returns correct count when students are enrolled' do
+      create(:enrollment, course: course, student: student1)
+      create(:enrollment, course: course, student: student2)
+      expect(course.enrolled_count).to eq(2)
+    end
+
+    it 'updates count when new enrollment is added' do
+      create(:enrollment, course: course, student: student1)
+      expect(course.enrolled_count).to eq(1)
+
+      create(:enrollment, course: course, student: student2)
+      expect(course.enrolled_count).to eq(2)
+    end
+  end
+
+  describe '#full?' do
+    let(:course) { create(:course, max_enrollment: 2) }
+    let(:student1) { create(:student) }
+    let(:student2) { create(:student) }
+    let(:student3) { create(:student) }
+
+    it 'returns false when course has available slots' do
+      expect(course.full?).to be false
+    end
+
+    it 'returns false when course is partially filled' do
+      create(:enrollment, course: course, student: student1)
+      expect(course.full?).to be false
+    end
+
+    it 'returns true when course is exactly full' do
+      create(:enrollment, course: course, student: student1)
+      create(:enrollment, course: course, student: student2)
+      expect(course.full?).to be true
+    end
+
+    it 'returns true when course is over capacity' do
+      course.update!(max_enrollment: 1)
+      create(:enrollment, course: course, student: student1)
+      create(:enrollment, course: course, student: student2)
+      expect(course.full?).to be true
+    end
+  end
+
+  describe '.available_for_selection' do
+    let!(:course1) { create(:course, name: '课程1') }
+    let!(:course2) { create(:course, name: '课程2') }
+    let!(:course3) { create(:course, name: '课程3') }
+
+    it 'returns all courses when semester is not specified' do
+      courses = Course.available_for_selection(nil)
+      expect(courses).to include(course1, course2, course3)
+    end
+
+    it 'returns courses ordered by name' do
+      courses = Course.available_for_selection(nil)
+      expect(courses.first.name).to eq('课程1')
     end
   end
 end

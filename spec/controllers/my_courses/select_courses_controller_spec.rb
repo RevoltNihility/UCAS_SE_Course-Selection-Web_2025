@@ -26,7 +26,7 @@ RSpec.describe MyCourses::SelectCoursesController, type: :controller do
         course1 = create(:course, name: '课程A')
         course2 = create(:course, name: '课程B')
         get :index
-        expect(assigns(:courses)).to match_array([course1, course2])
+        expect(assigns(:courses)).to match_array([ course1, course2 ])
       end
 
       it 'assigns @course_type_options' do

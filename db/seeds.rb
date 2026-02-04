@@ -76,7 +76,7 @@ courses_data = [
   { name: "科技论文写作", code: "WRI101", credits: 1, class_hours: 16, teacher: "曹教授", course_type: :public_elective, max_enrollment: 40, schedule_time: "周四 15-16节" },
 
   # 一些满员的课程（用于测试）
-  { name: "人工智能导论", code: "CS411", credits: 3, class_hours: 48, teacher: "田教授", course_type: :elective, max_enrollment: 30, schedule_time: "周五 13-14节" },
+  { name: "人工智能导论", code: "CS411", credits: 3, class_hours: 48, teacher: "田教授", course_type: :elective, max_enrollment: 30, schedule_time: "周五 13-14节" }
 ]
 
 courses_data.each do |course_attrs|
@@ -94,4 +94,3 @@ end
 puts "Created #{Course.count} courses"
 puts "Created #{Student.count} students"
 puts "Created #{User.count} users"
-

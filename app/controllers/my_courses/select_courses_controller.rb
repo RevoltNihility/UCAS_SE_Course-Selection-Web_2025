@@ -12,10 +12,10 @@ class MyCourses::SelectCoursesController < ApplicationController
 
     # 准备课程类型选项
     @course_type_options = [
-      ['不限', ''],
-      ['必修', 'required'],
-      ['选修', 'elective'],
-      ['公共选修', 'public_elective']
+      [ "不限", "" ],
+      [ "必修", "required" ],
+      [ "选修", "elective" ],
+      [ "公共选修", "public_elective" ]
     ]
   end
 
@@ -54,4 +54,3 @@ class MyCourses::SelectCoursesController < ApplicationController
     redirect_to my_courses_select_courses_path
   end
 end
-

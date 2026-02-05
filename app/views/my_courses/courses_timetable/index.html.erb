@@ -5,7 +5,53 @@
     <%= render "my_courses/sidebar", current_page: :courses_timetable %>
 
     <div class="my-courses-container">
-      <p>课程时间表内容将在后续步骤中实现</p>
+      <% if @courses.empty? %>
+        <div class="empty-state">
+          <p>暂无选课记录</p>
+          <%= link_to "去选课", my_courses_select_courses_path, class: "btn btn-primary" %>
+        </div>
+      <% else %>
+        <% timetable_data = build_timetable_data(@courses) %>
+
+        <div class="timetable-wrapper">
+          <table class="timetable">
+            <thead>
+              <tr>
+                <th class="period-header">节次</th>
+                <th>周一</th>
+                <th>周二</th>
+                <th>周三</th>
+                <th>周四</th>
+                <th>周五</th>
+                <th>周六</th>
+                <th>周日</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% (1..13).each do |period| %>
+                <tr>
+                  <td class="period-cell"><%= period %></td>
+                  <% (1..7).each do |day| %>
+                    <% cell_data = timetable_data.dig(day, period) %>
+                    <% if cell_data %>
+                      <% if cell_data[:span_start] %>
+                        <td class="course-cell"
+                            style="background-color: <%= cell_data[:color] %>;"
+                            rowspan="<%= cell_data[:rowspan] %>"
+                            title="<%= cell_data[:course].code %> - <%= cell_data[:course].name %> - <%= cell_data[:course].teacher %>">
+                          <%= cell_data[:course].name %>
+                        </td>
+                      <% end %>
+                    <% else %>
+                      <td class="empty-cell"></td>
+                    <% end %>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

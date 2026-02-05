@@ -59,5 +59,37 @@ RSpec.describe "MyCourses::CoursesTimetable", type: :request do
         expect(response.body).to include("选择课程")
       end
     end
+
+    context "timetable structure" do
+      it "renders a timetable table" do
+        get my_courses_courses_timetable_index_path
+        expect(response.body).to include('<table class="timetable">')
+      end
+
+      it "renders weekday headers" do
+        get my_courses_courses_timetable_index_path
+        expect(response.body).to include("周一")
+        expect(response.body).to include("周二")
+        expect(response.body).to include("周三")
+        expect(response.body).to include("周四")
+        expect(response.body).to include("周五")
+        expect(response.body).to include("周六")
+        expect(response.body).to include("周日")
+      end
+
+      it "renders period numbers 1-13" do
+        get my_courses_courses_timetable_index_path
+        (1..13).each do |period|
+          expect(response.body).to include(">#{period}<")
+        end
+      end
+
+      it "renders courses in correct time slots" do
+        get my_courses_courses_timetable_index_path
+        expect(response.body).to include("高等数学")
+        expect(response.body).to include("线性代数")
+        expect(response.body).to include("数据结构")
+      end
+    end
   end
 end

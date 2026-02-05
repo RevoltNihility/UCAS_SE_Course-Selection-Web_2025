@@ -7,5 +7,9 @@
     <%= link_to my_courses_select_courses_path, class: "sidebar-item #{current_page == :select_courses ? 'active' : ''}" do %>
       选择课程
     <% end %>
+
+    <%= link_to my_courses_courses_timetable_index_path, class: "sidebar-item #{current_page == :courses_timetable ? 'active' : ''}" do %>
+      课程时间表
+    <% end %>
   </nav>
 </div>

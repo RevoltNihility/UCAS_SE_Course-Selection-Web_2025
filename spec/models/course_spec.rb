@@ -210,5 +210,98 @@ RSpec.describe Course, type: :model do
         expect(courses).to be_empty
       end
     end
+
+    context 'with schedule_time filter' do
+      let!(:course5) { create(:course, name: '数据结构', schedule_time: '1:1-2,3:3-4') }
+      let!(:course6) { create(:course, name: '操作系统', schedule_time: '2:5-6') }
+      let!(:course7) { create(:course, name: '计算机网络', schedule_time: '1:7-8') }
+
+      it 'filters courses by schedule_time' do
+        courses = Course.filter_for_selection(course_name: nil, course_type: nil, schedule_time: '1:1-2')
+        expect(courses).to include(course5)
+        expect(courses).not_to include(course6)
+      end
+
+      it 'handles partial match' do
+        courses = Course.filter_for_selection(course_name: nil, course_type: nil, schedule_time: '1:')
+        expect(courses).to include(course5, course7)
+        expect(courses).not_to include(course6)
+      end
+
+      it 'handles empty string as no filter' do
+        courses = Course.filter_for_selection(course_name: nil, course_type: nil, schedule_time: '')
+        expect(courses.count).to be >= 7
+      end
+    end
+  end
+
+  describe '#parsed_schedule' do
+    it 'returns empty array when schedule_time is nil' do
+      course = create(:course, schedule_time: nil)
+      expect(course.parsed_schedule).to eq([])
+    end
+
+    it 'returns empty array when schedule_time is blank' do
+      course = create(:course, schedule_time: '')
+      expect(course.parsed_schedule).to eq([])
+    end
+
+    it 'parses single time slot' do
+      course = create(:course, schedule_time: '1:1-2')
+      result = course.parsed_schedule
+      expect(result.length).to eq(1)
+      expect(result[0][:day]).to eq(1)
+      expect(result[0][:periods]).to eq([1, 2])
+    end
+
+    it 'parses multiple time slots' do
+      course = create(:course, schedule_time: '1:1-2,3:4-6')
+      result = course.parsed_schedule
+      expect(result.length).to eq(2)
+      expect(result[0][:day]).to eq(1)
+      expect(result[0][:periods]).to eq([1, 2])
+      expect(result[1][:day]).to eq(3)
+      expect(result[1][:periods]).to eq([4, 5, 6])
+    end
+
+    it 'parses single period' do
+      course = create(:course, schedule_time: '2:5')
+      result = course.parsed_schedule
+      expect(result.length).to eq(1)
+      expect(result[0][:day]).to eq(2)
+      expect(result[0][:periods]).to eq([5])
+    end
+  end
+
+  describe '#formatted_schedule' do
+    it 'returns "未安排" when schedule_time is nil' do
+      course = create(:course, schedule_time: nil)
+      expect(course.formatted_schedule).to eq('未安排')
+    end
+
+    it 'returns "未安排" when schedule_time is blank' do
+      course = create(:course, schedule_time: '')
+      expect(course.formatted_schedule).to eq('未安排')
+    end
+
+    it 'formats single time slot' do
+      course = create(:course, schedule_time: '1:1-2')
+      expect(course.formatted_schedule).to eq('周一 1-2节')
+    end
+
+    it 'formats multiple time slots' do
+      course = create(:course, schedule_time: '1:1-2,3:4-6')
+      expect(course.formatted_schedule).to eq('周一 1-2节, 周三 4-6节')
+    end
+
+    it 'formats single period' do
+      course = create(:course, schedule_time: '2:5')
+      expect(course.formatted_schedule).to eq('周二 5节')
+    end
+
+    it 'handles Friday correctly' do
+      course = create(:course, schedule_time: '5:9-10')
+      expect(course.formatted_schedule).to eq('周五 9-10节')
+    end
   end
 end

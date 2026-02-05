@@ -68,7 +68,10 @@
               <td><%= course.teacher %></td>
               <td><%= enrollment.semester_display %></td>
               <td>
-                <button class="btn btn-danger btn-sm" disabled>退课</button>
+                <%= button_to "退课", my_courses_selected_course_path(enrollment.id),
+                    method: :delete,
+                    class: "btn btn-danger btn-sm",
+                    data: { confirm: "确定要退选该课程吗？" } %>
               </td>
             </tr>
           <% end %>

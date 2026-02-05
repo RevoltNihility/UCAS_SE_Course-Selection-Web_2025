@@ -27,8 +27,9 @@
     <% if flash.any? %>
       <div class="flash-messages">
         <% flash.each do |type, message| %>
-          <div class="flash-message flash-<%= type %>">
+          <div class="flash-message flash-<%= type %>" data-flash-message>
             <%= message %>
+            <button class="flash-close" data-flash-close>&times;</button>
           </div>
         <% end %>
       </div>

@@ -114,4 +114,52 @@ RSpec.describe "MyCourses::SelectedCourses", type: :request do
       end
     end
   end
+
+  describe "DELETE /destroy" do
+    let(:enrollment) { student.enrollments.first }
+
+    context "when successfully dropping a course" do
+      it "deletes the enrollment record" do
+        expect {
+          delete my_courses_selected_course_path(enrollment.id)
+        }.to change(Enrollment, :count).by(-1)
+      end
+
+      it "redirects to selected_courses page" do
+        delete my_courses_selected_course_path(enrollment.id)
+        expect(response).to redirect_to(my_courses_selected_courses_path)
+      end
+
+      it "displays success message" do
+        delete my_courses_selected_course_path(enrollment.id)
+        follow_redirect!
+        expect(response.body).to include("退课成功")
+      end
+    end
+
+    context "when enrollment does not exist" do
+      it "returns 404 not found" do
+        delete my_courses_selected_course_path(99999)
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when enrollment belongs to another student" do
+      let(:other_user) { create(:user, email: "other@example.com") }
+      let(:other_student) { create(:student, user: other_user) }
+      let!(:other_enrollment) { create(:enrollment, student: other_student, course: course1) }
+
+      it "does not delete the enrollment" do
+        initial_count = Enrollment.count
+        delete my_courses_selected_course_path(other_enrollment.id)
+        expect(Enrollment.count).to eq(initial_count)
+      end
+
+      it "displays error message" do
+        delete my_courses_selected_course_path(other_enrollment.id)
+        follow_redirect!
+        expect(response.body).to include("无权退选该课程")
+      end
+    end
+  end
 end

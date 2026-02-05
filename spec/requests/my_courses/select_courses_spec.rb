@@ -27,6 +27,24 @@ RSpec.describe "MyCourses::SelectCourses", type: :request do
       expect(response.body).to include("机器学习")
     end
 
+    context "when student has already enrolled in some courses" do
+      before do
+        create(:enrollment, student: student, course: course1)
+      end
+
+      it "does not display enrolled courses" do
+        get my_courses_select_courses_path
+        expect(response.body).not_to include("高等数学")
+        expect(response.body).to include("线性代数")
+        expect(response.body).to include("机器学习")
+      end
+
+      it "only shows available courses count" do
+        get my_courses_select_courses_path
+        expect(assigns(:courses).count).to eq(2)
+      end
+    end
+
     it "filters courses by name" do
       get my_courses_select_courses_path, params: { course_name: "数学" }
       expect(response.body).to include("高等数学")
@@ -120,6 +138,43 @@ RSpec.describe "MyCourses::SelectCourses", type: :request do
         post my_courses_select_courses_path, params: { course_id: full_course.id }
         follow_redirect!
         expect(response.body).to include("选课人数已满")
+      end
+    end
+
+    context "when course has time conflict with enrolled courses" do
+      let(:enrolled_course) { create(:course, name: "已选课程", schedule_time: "1:1-2,3:4-6") }
+      let(:conflict_course1) { create(:course, name: "冲突课程1", schedule_time: "1:2-3") }
+      let(:conflict_course2) { create(:course, name: "冲突课程2", schedule_time: "3:5-7") }
+      let(:no_conflict_course) { create(:course, name: "不冲突课程", schedule_time: "2:1-2") }
+
+      before do
+        create(:enrollment, student: student, course: enrolled_course)
+      end
+
+      it "does not create enrollment when time conflicts" do
+        expect {
+          post my_courses_select_courses_path, params: { course_id: conflict_course1.id }
+        }.not_to change(Enrollment, :count)
+      end
+
+      it "displays conflict error message with course name" do
+        post my_courses_select_courses_path, params: { course_id: conflict_course1.id }
+        follow_redirect!
+        expect(response.body).to include("该课程与已选课程时间冲突")
+        expect(response.body).to include("已选课程")
+        expect(response.body).to include("flash-conflict")
+      end
+
+      it "detects conflict in different time slot" do
+        expect {
+          post my_courses_select_courses_path, params: { course_id: conflict_course2.id }
+        }.not_to change(Enrollment, :count)
+      end
+
+      it "allows enrollment when no time conflict" do
+        expect {
+          post my_courses_select_courses_path, params: { course_id: no_conflict_course.id }
+        }.to change(Enrollment, :count).by(1)
       end
     end
   end

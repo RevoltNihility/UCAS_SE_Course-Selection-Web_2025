@@ -10,7 +10,7 @@
           <div class="filter-fields">
             <div class="filter-field">
               <%= f.label :schedule_time, "上课时间" %>
-              <%= f.text_field :schedule_time, value: params[:schedule_time], placeholder: "输入上课时间" %>
+              <%= f.text_field :schedule_time, value: params[:schedule_time], placeholder: "例如: 1:1-2 表示周一1-2节" %>
             </div>
 
             <div class="filter-field">
@@ -52,6 +52,7 @@
                 <th>课程编号</th>
                 <th>课程名称</th>
                 <th>学时/学分</th>
+                <th>上课时间</th>
                 <th>已选/限选人数</th>
                 <th>课程类型</th>
                 <th>主讲教师</th>
@@ -64,6 +65,7 @@
                   <td><%= course.code %></td>
                   <td><%= course.name %></td>
                   <td><%= format_class_hours_credits(course) %></td>
+                  <td><%= course.formatted_schedule %></td>
                   <td class="<%= 'enrollment-full' if course.full? %>">
                     <%= course.enrolled_count %>/<%= course.max_enrollment %>
                   </td>
@@ -266,7 +268,7 @@
     background: #fafafa;
   }
 
-  .courses-table td:nth-child(7) {
+  .courses-table td:nth-child(8) {
     text-align: center;
   }
 

@@ -17,6 +17,11 @@ Rails.application.routes.draw do
     resources :credits_summary, only: [ :index ]
   end
 
+  namespace :teacher_courses do
+    resources :teaching_courses, only: [ :index ]
+    resources :course_students, only: [ :show ]
+  end
+
   # Static pages
   get "welcome/index"
   root "welcome#index"

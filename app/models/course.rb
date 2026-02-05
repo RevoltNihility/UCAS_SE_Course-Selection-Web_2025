@@ -1,6 +1,8 @@
 class Course < ApplicationRecord
   has_many :enrollments, dependent: :destroy
   has_many :students, through: :enrollments
+  has_many :teachings, dependent: :destroy
+  has_many :teachers, through: :teachings
 
   # 课程类型枚举
   enum :course_type, {

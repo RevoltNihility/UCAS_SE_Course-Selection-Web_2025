@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_one :student, dependent: :destroy
+  has_one :teacher, dependent: :destroy
 
   enum :role, { student: 0, teacher: 1, admin: 2 }
 

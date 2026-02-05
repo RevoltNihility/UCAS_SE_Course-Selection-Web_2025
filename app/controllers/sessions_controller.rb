@@ -1,7 +1,11 @@
 class SessionsController < ApplicationController
   include SessionsHelper
   def new
-    logged_in? ? (redirect_to my_courses_selected_courses_path) : (render :new)
+    if logged_in?
+      redirect_to redirect_path_for_user(current_user)
+    else
+      render :new
+    end
   end
 
   def create
@@ -9,7 +13,7 @@ class SessionsController < ApplicationController
     if user && user.authenticate(params[:session][:password])
       log_in(user)
       flash[:success] = "登录成功！"
-      redirect_back_or(my_courses_selected_courses_path)
+      redirect_back_or(redirect_path_for_user(user))
     else
       flash.now[:danger] = "登录失败，用户名/密码错误！"
       render :new
@@ -19,5 +23,11 @@ class SessionsController < ApplicationController
   def destroy
     log_out
     redirect_to login_path
+  end
+
+  private
+
+  def redirect_path_for_user(user)
+    user.teacher? ? teacher_courses_teaching_courses_path : my_courses_selected_courses_path
   end
 end

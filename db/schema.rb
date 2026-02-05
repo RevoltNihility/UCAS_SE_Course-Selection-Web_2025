@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_05_112608) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_114447) do
   create_table "courses", force: :cascade do |t|
     t.integer "class_hours"
     t.string "code", null: false
@@ -48,6 +48,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_112608) do
     t.index ["user_id"], name: "index_students_on_user_id"
   end
 
+  create_table "teachers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "name", limit: 50, null: false
+    t.string "teacher_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["email"], name: "index_teachers_on_email", unique: true
+    t.index ["teacher_id"], name: "index_teachers_on_teacher_id", unique: true
+    t.index ["user_id"], name: "index_teachers_on_user_id"
+  end
+
+  create_table "teachings", force: :cascade do |t|
+    t.integer "course_id", null: false
+    t.datetime "created_at", null: false
+    t.string "semester"
+    t.integer "teacher_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_teachings_on_course_id"
+    t.index ["teacher_id", "course_id"], name: "index_teachings_on_teacher_id_and_course_id", unique: true
+    t.index ["teacher_id"], name: "index_teachings_on_teacher_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -59,4 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_112608) do
   add_foreign_key "enrollments", "courses"
   add_foreign_key "enrollments", "students"
   add_foreign_key "students", "users"
+  add_foreign_key "teachers", "users"
+  add_foreign_key "teachings", "courses"
+  add_foreign_key "teachings", "teachers"
 end

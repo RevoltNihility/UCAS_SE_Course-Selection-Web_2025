@@ -58,7 +58,7 @@ class MyCourses::SelectCoursesController < ApplicationController
       course: course,
       academic_year: "2024-2025",
       semester: :fall,
-      course_type: :major_required
+      course_type: course.course_type
     )
 
     if enrollment.save

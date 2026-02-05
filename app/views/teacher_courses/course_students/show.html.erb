@@ -1,5 +1,8 @@
 <div class="course-students-page">
-  <h1><%= @course.name %> - 学生名单</h1>
+  <div class="page-header">
+    <h1><%= @course.name %> - 学生名单</h1>
+    <%= button_to "退出登录", logout_path, method: :delete, class: "btn btn-logout", data: { turbo: false } %>
+  </div>
 
   <div class="back-link">
     <%= link_to "← 返回课程列表", teacher_courses_teaching_courses_path, class: "btn btn-secondary" %>
@@ -50,11 +53,18 @@
     padding: 0 20px;
   }
 
-  .course-students-page h1 {
-    font-size: 24px;
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
     border-bottom: 2px solid #333;
     padding-bottom: 10px;
+  }
+
+  .course-students-page h1 {
+    font-size: 24px;
+    margin: 0;
   }
 
   .back-link {
@@ -136,5 +146,16 @@
   .btn-secondary {
     background: #fff;
     color: #333;
+  }
+
+  .btn-logout {
+    background: #fff;
+    color: #d9534f;
+    border-color: #d9534f;
+  }
+
+  .btn-logout:hover {
+    background: #d9534f;
+    color: #fff;
   }
 </style>

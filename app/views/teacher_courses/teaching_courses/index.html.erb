@@ -1,5 +1,8 @@
 <div class="teacher-courses-page">
-  <h1>我教授的课程</h1>
+  <div class="page-header">
+    <h1>我教授的课程</h1>
+    <%= button_to "退出登录", logout_path, method: :delete, class: "btn btn-logout", data: { turbo: false } %>
+  </div>
 
   <div class="courses-table-wrapper">
     <% if @courses.empty? %>
@@ -47,11 +50,18 @@
     padding: 0 20px;
   }
 
-  .teacher-courses-page h1 {
-    font-size: 24px;
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
     border-bottom: 2px solid #333;
     padding-bottom: 10px;
+  }
+
+  .teacher-courses-page h1 {
+    font-size: 24px;
+    margin: 0;
   }
 
   .courses-table-wrapper {
@@ -123,5 +133,16 @@
   .btn-sm {
     padding: 4px 12px;
     font-size: 13px;
+  }
+
+  .btn-logout {
+    background: #fff;
+    color: #d9534f;
+    border-color: #d9534f;
+  }
+
+  .btn-logout:hover {
+    background: #d9534f;
+    color: #fff;
   }
 </style>

@@ -131,7 +131,45 @@ full_courses.each do |course_code|
   puts "Course #{course.name} (#{course_code}) is now full: #{enrolled_count}/#{course.max_enrollment}"
 end
 
+# Create teacher users and link them to courses
+# Extract unique teacher names from courses
+teacher_names = Course.pluck(:teacher).uniq.compact
+
+teacher_names.each_with_index do |teacher_name, index|
+  # Create user account for teacher
+  email = "teacher#{index + 1}@university.edu.cn"
+  user = User.find_or_create_by!(email: email) do |u|
+    u.password = "teacher123"
+    u.password_confirmation = "teacher123"
+    u.role = :teacher
+  end
+
+  # Create teacher record
+  teacher_id = "T#{format('%08d', index + 1)}"
+  teacher = Teacher.find_or_create_by!(teacher_id: teacher_id) do |t|
+    t.user = user
+    t.name = teacher_name
+    t.email = email
+  end
+
+  # Link teacher to their courses through Teaching model
+  courses = Course.where(teacher: teacher_name)
+  courses.each do |course|
+    Teaching.find_or_create_by!(teacher: teacher, course: course) do |teaching|
+      teaching.semester = "2024-2025-1"
+    end
+  end
+
+  puts "Created teacher: #{teacher_name} (#{email}) with #{courses.count} courses"
+end
+
+puts "\n=== Seed Data Summary ==="
 puts "Created #{Course.count} courses"
 puts "Created #{Student.count} students"
+puts "Created #{Teacher.count} teachers"
 puts "Created #{User.count} users"
+puts "Created #{Teaching.count} teaching assignments"
 puts "Created enrollments for full courses"
+puts "\n=== Test Accounts ==="
+puts "Student account: qiuzitao23@mails.ac.cn / correct_password"
+puts "Teacher account: teacher1@university.edu.cn / teacher123 (teaches: #{Teacher.first&.courses&.pluck(:name)&.join(', ')})"

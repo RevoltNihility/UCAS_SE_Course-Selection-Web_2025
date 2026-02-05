@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     resources :selected_courses, only: [ :destroy ]
     resources :select_courses, only: [ :index, :create ]
     resources :courses_timetable, only: [ :index ]
+    resources :credits_summary, only: [ :index ]
   end
 
   # Static pages

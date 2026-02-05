@@ -11,5 +11,9 @@
     <%= link_to my_courses_courses_timetable_index_path, class: "sidebar-item #{current_page == :courses_timetable ? 'active' : ''}" do %>
       课程时间表
     <% end %>
+
+    <%= link_to my_courses_credits_summary_index_path, class: "sidebar-item #{current_page == :credits_summary ? 'active' : ''}" do %>
+      学分统计
+    <% end %>
   </nav>
 </div>

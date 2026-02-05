@@ -1,0 +1,146 @@
+<div class="my-courses-page">
+  <h1>学分统计</h1>
+
+  <div class="my-courses-layout">
+    <%= render "my_courses/sidebar", current_page: :credits_summary %>
+
+    <div class="my-courses-container">
+      <div class="credits-summary-table-wrapper">
+        <table class="credits-summary-table">
+          <thead>
+            <tr>
+              <th>公共必修课</th>
+              <th>公共选修课</th>
+              <th>专业必修课</th>
+              <th>专业选修课</th>
+              <th>总学分</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="requirements-row">
+              <td><%= @requirements[:public_required] %></td>
+              <td><%= @requirements[:public_elective] %></td>
+              <td><%= @requirements[:major_required] %></td>
+              <td><%= @requirements[:major_elective] %></td>
+              <td><%= @requirements[:total] %></td>
+            </tr>
+            <tr class="earned-row">
+              <td class="<%= 'insufficient' if @public_required_credits < @requirements[:public_required] %>">
+                <%= @public_required_credits %>
+              </td>
+              <td class="<%= 'insufficient' if @public_elective_credits < @requirements[:public_elective] %>">
+                <%= @public_elective_credits %>
+              </td>
+              <td class="<%= 'insufficient' if @major_required_credits < @requirements[:major_required] %>">
+                <%= @major_required_credits %>
+              </td>
+              <td class="<%= 'insufficient' if @major_elective_credits < @requirements[:major_elective] %>">
+                <%= @major_elective_credits %>
+              </td>
+              <td class="<%= 'insufficient' if @total_credits < @requirements[:total] %>">
+                <%= @total_credits %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .my-courses-page {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+  }
+
+  .my-courses-page h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+  }
+
+  .my-courses-layout {
+    display: flex;
+    gap: 20px;
+  }
+
+  .my-courses-sidebar {
+    flex-shrink: 0;
+    width: 200px;
+  }
+
+  .sidebar-nav {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+  }
+
+  .sidebar-item {
+    display: block;
+    padding: 12px 16px;
+    border-bottom: 1px solid #ddd;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .sidebar-item:last-child {
+    border-bottom: none;
+  }
+
+  .sidebar-item:hover:not(.disabled) {
+    background: #e8e8e8;
+  }
+
+  .sidebar-item.active {
+    background: #333;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .my-courses-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .credits-summary-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .credits-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    margin-top: 20px;
+  }
+
+  .credits-summary-table th,
+  .credits-summary-table td {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 16px;
+  }
+
+  .credits-summary-table th {
+    background: #f5f5f5;
+    font-weight: bold;
+  }
+
+  .credits-summary-table .requirements-row {
+    background: #fafafa;
+    font-weight: bold;
+  }
+
+  .credits-summary-table .earned-row td {
+    font-size: 18px;
+  }
+
+  .credits-summary-table .insufficient {
+    color: #d32f2f;
+    font-weight: bold;
+  }
+</style>

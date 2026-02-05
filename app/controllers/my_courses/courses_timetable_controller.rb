@@ -3,7 +3,14 @@ module MyCourses
     before_action :request_logged
 
     def index
-      # 将在步骤2中实现
+      @student = current_user.student
+
+      if @student
+        # 获取学生已选的所有课程
+        @courses = @student.enrollments.includes(:course).map(&:course)
+      else
+        @courses = []
+      end
     end
   end
 end

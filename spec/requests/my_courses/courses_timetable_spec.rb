@@ -92,4 +92,102 @@ RSpec.describe "MyCourses::CoursesTimetable", type: :request do
       end
     end
   end
+
+  describe "Integration: Complete user flow" do
+    context "accessing timetable from sidebar" do
+      it "allows navigation from selected_courses page" do
+        get my_courses_selected_courses_path
+        expect(response.body).to include("课程时间表")
+        expect(response.body).to include(my_courses_courses_timetable_index_path)
+
+        get my_courses_courses_timetable_index_path
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("课程时间表")
+      end
+
+      it "allows navigation from select_courses page" do
+        get my_courses_select_courses_path
+        expect(response.body).to include("课程时间表")
+        expect(response.body).to include(my_courses_courses_timetable_index_path)
+
+        get my_courses_courses_timetable_index_path
+        expect(response).to have_http_status(:success)
+      end
+    end
+
+    context "accessing timetable from selected_courses button" do
+      it "navigates to timetable when clicking the button" do
+        get my_courses_selected_courses_path
+        expect(response.body).to include("查看本学期课表")
+        expect(response.body).to include(my_courses_courses_timetable_index_path)
+
+        get my_courses_courses_timetable_index_path
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("高等数学")
+      end
+    end
+
+    context "with multiple courses at different times" do
+      it "displays all courses in correct positions" do
+        get my_courses_courses_timetable_index_path
+
+        # 验证课程出现在页面中
+        expect(response.body).to include("高等数学")
+        expect(response.body).to include("线性代数")
+        expect(response.body).to include("数据结构")
+
+        # 验证有课程方块样式
+        expect(response.body).to include('class="course-cell"')
+        expect(response.body).to include('rowspan=')
+      end
+    end
+
+    context "with no enrolled courses" do
+      let(:new_user) { create(:user, email: "newuser@example.com") }
+      let(:new_student) { create(:student, user: new_user) }
+
+      before do
+        delete logout_path
+        post login_path, params: { session: { email: new_user.email, password: "password123" } }
+      end
+
+      it "displays empty state with link to select courses" do
+        get my_courses_courses_timetable_index_path
+        expect(response.body).to include("暂无选课记录")
+        expect(response.body).to include("去选课")
+        expect(response.body).to include(my_courses_select_courses_path)
+      end
+
+      it "allows navigation to select_courses page" do
+        get my_courses_courses_timetable_index_path
+        expect(response.body).to include(my_courses_select_courses_path)
+
+        get my_courses_select_courses_path
+        expect(response).to have_http_status(:success)
+      end
+    end
+
+    context "course details in tooltip" do
+      it "includes course code, name, and teacher in title attribute" do
+        get my_courses_courses_timetable_index_path
+
+        # 验证tooltip包含课程详细信息
+        expect(response.body).to match(/title="[^"]*#{course1.code}[^"]*#{course1.name}[^"]*#{course1.teacher}[^"]*"/)
+      end
+    end
+
+    context "multi-period courses" do
+      let(:long_course) { create(:course, name: "体育课", schedule_time: "4:1-3") }
+
+      before do
+        create(:enrollment, student: student, course: long_course)
+      end
+
+      it "displays courses spanning multiple periods with rowspan" do
+        get my_courses_courses_timetable_index_path
+        expect(response.body).to include("体育课")
+        expect(response.body).to include('rowspan="3"')
+      end
+    end
+  end
 end

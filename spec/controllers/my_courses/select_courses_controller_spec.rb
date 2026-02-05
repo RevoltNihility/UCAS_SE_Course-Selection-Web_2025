@@ -48,23 +48,23 @@ RSpec.describe MyCourses::SelectCoursesController, type: :controller do
       end
 
       context 'with course_type filter' do
-        let!(:required_course) { create(:course, name: '必修课', course_type: :required) }
-        let!(:elective_course) { create(:course, name: '选修课', course_type: :elective) }
+        let!(:required_course) { create(:course, name: '必修课', course_type: :major_required) }
+        let!(:elective_course) { create(:course, name: '选修课', course_type: :major_elective) }
 
         it 'filters courses by type' do
-          get :index, params: { course_type: 'required' }
+          get :index, params: { course_type: 'major_required' }
           expect(assigns(:courses)).to include(required_course)
           expect(assigns(:courses)).not_to include(elective_course)
         end
       end
 
       context 'with multiple filters' do
-        let!(:course1) { create(:course, name: '高等数学', course_type: :required) }
-        let!(:course2) { create(:course, name: '线性代数', course_type: :required) }
-        let!(:course3) { create(:course, name: '机器学习', course_type: :elective) }
+        let!(:course1) { create(:course, name: '高等数学', course_type: :major_required) }
+        let!(:course2) { create(:course, name: '线性代数', course_type: :major_required) }
+        let!(:course3) { create(:course, name: '机器学习', course_type: :major_elective) }
 
         it 'applies all filters' do
-          get :index, params: { course_name: '数学', course_type: 'required' }
+          get :index, params: { course_name: '数学', course_type: 'major_required' }
           expect(assigns(:courses)).to include(course1)
           expect(assigns(:courses)).not_to include(course2)
           expect(assigns(:courses)).not_to include(course3)

@@ -11,9 +11,9 @@ RSpec.describe "MyCourses::SelectCourses", type: :request do
   end
 
   describe "GET /my_courses/select_courses" do
-    let!(:course1) { create(:course, name: "高等数学", course_type: :required) }
-    let!(:course2) { create(:course, name: "线性代数", course_type: :required) }
-    let!(:course3) { create(:course, name: "机器学习", course_type: :elective) }
+    let!(:course1) { create(:course, name: "高等数学", course_type: :major_required) }
+    let!(:course2) { create(:course, name: "线性代数", course_type: :major_required) }
+    let!(:course3) { create(:course, name: "机器学习", course_type: :major_elective) }
 
     it "returns http success" do
       get my_courses_select_courses_path
@@ -34,7 +34,7 @@ RSpec.describe "MyCourses::SelectCourses", type: :request do
     end
 
     it "filters courses by type" do
-      get my_courses_select_courses_path, params: { course_type: "elective" }
+      get my_courses_select_courses_path, params: { course_type: "major_elective" }
       expect(response.body).to include("机器学习")
       expect(response.body).not_to include("高等数学")
     end

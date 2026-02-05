@@ -13,9 +13,10 @@ class MyCourses::SelectCoursesController < ApplicationController
     # 准备课程类型选项
     @course_type_options = [
       [ "不限", "" ],
-      [ "必修", "required" ],
-      [ "选修", "elective" ],
-      [ "公共选修", "public_elective" ]
+      [ "公共必修", "public_required" ],
+      [ "公共选修", "public_elective" ],
+      [ "专业必修", "major_required" ],
+      [ "专业选修", "major_elective" ]
     ]
   end
 

@@ -3,7 +3,12 @@ class Course < ApplicationRecord
   has_many :students, through: :enrollments
 
   # 课程类型枚举
-  enum :course_type, { required: 0, elective: 1, public_elective: 2 }
+  enum :course_type, {
+    public_required: 0,   # 公共必修
+    public_elective: 1,   # 公共选修
+    major_required: 2,    # 专业必修
+    major_elective: 3     # 专业选修
+  }
 
   # 验证
   validates :max_enrollment, numericality: { greater_than: 0 }

@@ -20,8 +20,8 @@ RSpec.describe Course, type: :model do
       expect(course.max_enrollment).to eq(100)
     end
 
-    it 'sets course_type to required by default' do
-      expect(course.course_type).to eq('required')
+    it 'sets course_type to major_required by default' do
+      expect(course.course_type).to eq('major_required')
     end
 
     it 'allows schedule_time to be nil' do
@@ -45,22 +45,32 @@ RSpec.describe Course, type: :model do
 
   describe 'enums' do
     it 'defines course_type enum' do
-      expect(Course.course_types).to eq({ 'required' => 0, 'elective' => 1, 'public_elective' => 2 })
+      expect(Course.course_types).to eq({
+        'public_required' => 0,
+        'public_elective' => 1,
+        'major_required' => 2,
+        'major_elective' => 3
+      })
     end
 
-    it 'allows setting course_type to required' do
-      course = Course.create!(name: '必修课', code: 'REQ001', credits: 3, course_type: :required)
-      expect(course.required?).to be true
-    end
-
-    it 'allows setting course_type to elective' do
-      course = Course.create!(name: '选修课', code: 'ELE001', credits: 2, course_type: :elective)
-      expect(course.elective?).to be true
+    it 'allows setting course_type to public_required' do
+      course = Course.create!(name: '公共必修课', code: 'PUB001', credits: 3, course_type: :public_required)
+      expect(course.public_required?).to be true
     end
 
     it 'allows setting course_type to public_elective' do
-      course = Course.create!(name: '公选课', code: 'PUB001', credits: 1, course_type: :public_elective)
+      course = Course.create!(name: '公共选修课', code: 'PUB002', credits: 2, course_type: :public_elective)
       expect(course.public_elective?).to be true
+    end
+
+    it 'allows setting course_type to major_required' do
+      course = Course.create!(name: '专业必修课', code: 'MAJ001', credits: 3, course_type: :major_required)
+      expect(course.major_required?).to be true
+    end
+
+    it 'allows setting course_type to major_elective' do
+      course = Course.create!(name: '专业选修课', code: 'MAJ002', credits: 2, course_type: :major_elective)
+      expect(course.major_elective?).to be true
     end
   end
 
@@ -138,10 +148,10 @@ RSpec.describe Course, type: :model do
   end
 
   describe '.filter_for_selection' do
-    let!(:course1) { create(:course, name: '高等数学', course_type: :required) }
-    let!(:course2) { create(:course, name: '线性代数', course_type: :required) }
-    let!(:course3) { create(:course, name: '机器学习', course_type: :elective) }
-    let!(:course4) { create(:course, name: '大学物理', course_type: :required) }
+    let!(:course1) { create(:course, name: '高等数学', course_type: :major_required) }
+    let!(:course2) { create(:course, name: '线性代数', course_type: :major_required) }
+    let!(:course3) { create(:course, name: '机器学习', course_type: :major_elective) }
+    let!(:course4) { create(:course, name: '大学物理', course_type: :major_required) }
 
     context 'without any filters' do
       it 'returns all courses ordered by name' do
@@ -171,13 +181,13 @@ RSpec.describe Course, type: :model do
 
     context 'with course_type filter' do
       it 'filters courses by type' do
-        courses = Course.filter_for_selection(course_name: nil, course_type: 'required')
+        courses = Course.filter_for_selection(course_name: nil, course_type: 'major_required')
         expect(courses).to include(course1, course2, course4)
         expect(courses).not_to include(course3)
       end
 
       it 'handles elective type' do
-        courses = Course.filter_for_selection(course_name: nil, course_type: 'elective')
+        courses = Course.filter_for_selection(course_name: nil, course_type: 'major_elective')
         expect(courses).to include(course3)
         expect(courses).not_to include(course1, course2, course4)
       end
@@ -190,13 +200,13 @@ RSpec.describe Course, type: :model do
 
     context 'with both filters' do
       it 'applies both course_name and course_type filters' do
-        courses = Course.filter_for_selection(course_name: '数', course_type: 'required')
+        courses = Course.filter_for_selection(course_name: '数', course_type: 'major_required')
         expect(courses).to include(course1, course2)
         expect(courses).not_to include(course3, course4)
       end
 
       it 'returns empty when no courses match both conditions' do
-        courses = Course.filter_for_selection(course_name: '数学', course_type: 'elective')
+        courses = Course.filter_for_selection(course_name: '数学', course_type: 'major_elective')
         expect(courses).to be_empty
       end
     end

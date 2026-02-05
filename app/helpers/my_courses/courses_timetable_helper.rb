@@ -1,16 +1,16 @@
 module MyCourses::CoursesTimetableHelper
   # 预定义的课程颜色数组
   COURSE_COLORS = [
-    '#FFB6C1', # 浅粉色
-    '#B0E0E6', # 浅蓝色
-    '#98FB98', # 浅绿色
-    '#FFD700', # 金色
-    '#DDA0DD', # 梅红色
-    '#F0E68C', # 卡其色
-    '#FFA07A', # 浅橙色
-    '#87CEEB', # 天蓝色
-    '#F08080', # 浅珊瑚色
-    '#E0BBE4'  # 淡紫色
+    "#FFB6C1", # 浅粉色
+    "#B0E0E6", # 浅蓝色
+    "#98FB98", # 浅绿色
+    "#FFD700", # 金色
+    "#DDA0DD", # 梅红色
+    "#F0E68C", # 卡其色
+    "#FFA07A", # 浅橙色
+    "#87CEEB", # 天蓝色
+    "#F08080", # 浅珊瑚色
+    "#E0BBE4"  # 淡紫色
   ].freeze
 
   # 为课程分配颜色
